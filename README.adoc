@@ -1,0 +1,12 @@
+= This project demonstrates how to write a CRUD rest API
+
+== Technology Stack
+- Docker
+- PostgreSQL
+- Vault (cubbyhole authentication)
+- Spring Boot
+- Maven
+
+== Folder Structure
+
+- Docker: This folder contains one subfolder for each container that needs to be built/deployed in order to run the application (ie: PostgreSQL, Vault, etc...). Each subfolder contains all the configuration for each service.
