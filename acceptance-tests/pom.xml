@@ -92,8 +92,184 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <docker.shared.data.volume>/shared_data_volume</docker.shared.data.volume>
+  </properties>
+
   <build>
     <plugins>
+
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.33.0</version>
+        <configuration>
+          <skip>${docker.skip}</skip>
+          <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
+          <verbose>true</verbose>
+          <skipPush>true</skipPush>
+          <containerNamePattern>%a</containerNamePattern>
+
+          <volumes>
+            <volume>
+              <name>cubbyhole-volume</name>
+              <driver>local</driver>
+            </volume>
+            <volume>
+              <name>token-volume</name>
+              <driver>local</driver>
+            </volume>
+            <volume>
+              <name>shared-data-volume</name>
+              <driver>local</driver>
+            </volume>
+          </volumes>
+
+          <images>
+
+            <image>
+              <name>shared-data-container</name>
+              <alias>shared-data-container</alias>
+              <build>
+                <contextDir>${project.parent.basedir}/Docker/Shared-Data-Container/</contextDir>
+                <dockerFile>Dockerfile</dockerFile>
+                <nocache/>
+                <cleanup>remove</cleanup>
+              </build>
+              <run>
+                <volumes>
+                  <bind>
+                    <volume>shared-data-volume:${docker.shared.data.volume}</volume>
+                  </bind>
+                </volumes>
+                <env>
+                  <SHARED_DATA_VOLUME>${docker.shared.data.volume}</SHARED_DATA_VOLUME>
+                </env>
+                <network>
+                  <mode>custom</mode>
+                  <name>com.github.axiopisty.scvdd.docker.network</name>
+                </network>
+                <log>
+                  <enabled>true</enabled>
+                </log>
+                <wait>
+                  <log>Shared Data Container initialized and ready to be used</log>
+                  <time>5000</time> <!-- Wait up to 5 seconds for the container to be ready, otherwise fail the build -->
+                </wait>
+              </run>
+            </image>
+
+            <image>
+              <alias>vault</alias>
+              <name>vault</name>
+              <build>
+                <contextDir>${project.parent.basedir}/Docker/Vault/</contextDir>
+                <dockerFile>Dockerfile</dockerFile>
+                <nocache/>
+                <cleanup>remove</cleanup>
+              </build>
+              <run>
+                <hostname>vault</hostname>
+                <env>
+                  <APP_NAMES>rest-api</APP_NAMES>
+                  <SHARED_DATA_VOLUME>${docker.shared.data.volume}</SHARED_DATA_VOLUME>
+                </env>
+                <volumes>
+                  <bind>
+                    <volume>token-volume:/token_volume</volume>
+                    <volume>cubbyhole-volume:/cubbyhole</volume>
+                    <volume>shared-data-volume:${docker.shared.data.volume}</volume>
+                  </bind>
+                </volumes>
+                <ports>
+                  <port>vault.port:8200</port>
+                </ports>
+                <network>
+                  <mode>custom</mode>
+                  <name>com.github.axiopisty.scvdd.docker.network</name>
+                  <alias>vault</alias>
+                </network>
+                <log>
+                  <enabled>true</enabled>
+                </log>
+                <dependsOn>
+                  <container>shared-data-container</container>
+                </dependsOn>
+                <wait>
+                  <log>Vault is initialized and ready to be used.</log>
+                  <time>20000</time> <!-- Wait up to 20 seconds for the container to be ready, otherwise fail the build -->
+                </wait>
+              </run>
+            </image>
+            <image>
+              <alias>acceptance-tests</alias>
+              <name>acceptance-tests:%l</name>
+              <build>
+                <contextDir>${project.parent.basedir}/rest-api/target/jib-docker-context/</contextDir>
+                <dockerFile>Dockerfile</dockerFile>
+                <nocache/>
+                <cleanup>remove</cleanup>
+              </build>
+              <run>
+                <hostname>rest-api</hostname>
+                <env>
+                  <VAULT_SECRETS_PATH>secret/apps/rest-api</VAULT_SECRETS_PATH>
+                  <VAULT_ADDR>http://vault:8200</VAULT_ADDR>
+                  <TOKEN_PATH>/cubbyhole/rest-api.txt</TOKEN_PATH>
+                  <ANSI_ENABLED_LOGS>ALWAYS</ANSI_ENABLED_LOGS>
+                </env>
+                <volumes>
+                  <bind>
+                    <volume>cubbyhole-volume:/cubbyhole</volume>
+                  </bind>
+                </volumes>
+                <network>
+                  <mode>custom</mode>
+                  <name>com.github.axiopisty.scvdd.docker.network</name>
+                </network>
+                <ports>
+                  <port>server.port:8080</port>
+                </ports>
+                <dependsOn>
+                  <container>shared-data-container</container>
+                  <container>vault</container>
+                </dependsOn>
+                <wait>
+                  <log>rest-api initialized and ready</log>
+                  <time>40000</time>
+                </wait>
+                <log>
+                  <enabled>true</enabled>
+                </log>
+              </run>
+            </image>
+          </images>
+        </configuration>
+        <executions>
+          <execution>
+            <id>docker-build</id>
+            <phase>package</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>prepare-it-database</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>remove-it-database</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>

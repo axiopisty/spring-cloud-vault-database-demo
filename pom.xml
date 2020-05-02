@@ -43,10 +43,29 @@
     <serenity.version>2.1.6</serenity.version>
     <serenity-cucumber.version>1.9.51</serenity-cucumber.version>
 
+    <spring-cloud.version>Hoxton.RELEASE</spring-cloud.version>
+    <spring-cloud-vault.version>2.2.0.RELEASE</spring-cloud-vault.version>
+
   </properties>
 
   <dependencyManagement>
     <dependencies>
+
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-vault-dependencies</artifactId>
+        <version>${spring-cloud-vault.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
       <dependency>
         <groupId>net.serenity-bdd</groupId>
         <artifactId>serenity-core</artifactId>

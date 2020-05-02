@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: rest-api
+  main:
+    banner-mode: off
+    lazy-initialization: false
+  output:
+    ansi:
+      enabled: ${ANSI_ENABLED_LOGS:NEVER}
