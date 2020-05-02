@@ -18,6 +18,7 @@
 
   <modules>
     <module>rest-api</module>
+    <module>acceptance-tests</module>
   </modules>
 
   <properties>
@@ -39,7 +40,39 @@
     <git-commit-id-plugin.version>4.0.0</git-commit-id-plugin.version>
     <docker-maven-plugin.version>0.33.0</docker-maven-plugin.version>
 
+    <serenity.version>2.1.6</serenity.version>
+    <serenity-cucumber.version>1.9.51</serenity-cucumber.version>
+
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>net.serenity-bdd</groupId>
+        <artifactId>serenity-core</artifactId>
+        <version>${serenity.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.serenity-bdd</groupId>
+        <artifactId>serenity-junit</artifactId>
+        <version>${serenity.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.serenity-bdd</groupId>
+        <artifactId>serenity-rest-assured</artifactId>
+        <version>${serenity.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.serenity-bdd</groupId>
+        <artifactId>serenity-cucumber</artifactId>
+        <version>${serenity-cucumber.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <pluginManagement>
@@ -125,7 +158,8 @@
             <prefix>git</prefix>
             <verbose>false</verbose>
             <generateGitPropertiesFile>true</generateGitPropertiesFile>
-            <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+            <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+            </generateGitPropertiesFilename>
 
             <includeOnlyProperties>
               <includeOnlyProperty>^git.build.version$</includeOnlyProperty>
