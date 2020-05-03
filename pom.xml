@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.2.6.RELEASE</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
+
+  <groupId>com.github.axiopisty.scvdd</groupId>
+  <artifactId>spring-cloud-vault-database-demo</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>rest-api</module>
+    <module>acceptance-tests</module>
+  </modules>
+
+  <properties>
+
+    <!-- Build and compile props -->
+    <java.version>14</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.version>3.6.3</maven.version>
+
+    <!-- Plugin versions -->
+    <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
+    <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
+    <maven-surefire-report-plugin.version>3.0.0-M4</maven-surefire-report-plugin.version>
+    <maven-failsafe-plugin.version>3.0.0-M4</maven-failsafe-plugin.version>
+    <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+    <git-commit-id-plugin.version>4.0.0</git-commit-id-plugin.version>
+    <docker-maven-plugin.version>0.33.0</docker-maven-plugin.version>
+
+    <serenity.version>2.1.6</serenity.version>
+    <serenity-cucumber.version>1.9.51</serenity-cucumber.version>
+
+    <spring-cloud.version>Hoxton.RELEASE</spring-cloud.version>
+    <spring-cloud-vault.version>2.2.0.RELEASE</spring-cloud-vault.version>
+
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-vault-dependencies</artifactId>
+        <version>${spring-cloud-vault.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>net.serenity-bdd</groupId>
+        <artifactId>serenity-core</artifactId>
+        <version>${serenity.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.serenity-bdd</groupId>
+        <artifactId>serenity-junit</artifactId>
+        <version>${serenity.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.serenity-bdd</groupId>
+        <artifactId>serenity-rest-assured</artifactId>
+        <version>${serenity.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.serenity-bdd</groupId>
+        <artifactId>serenity-cucumber</artifactId>
+        <version>${serenity-cucumber.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${maven-clean-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${maven-resources-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+          <configuration>
+            <release>${java.version}</release>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven-surefire-plugin.version}</version>
+          <configuration>
+            <skipTests>true</skipTests>
+          </configuration>
+          <executions>
+            <execution>
+              <id>unit-tests</id>
+              <phase>test</phase>
+              <goals>
+                <goal>test</goal>
+              </goals>
+              <configuration>
+                <skipTests>false</skipTests>
+                <excludes>
+                  <exclude>**/*IntegrationTest.java</exclude>
+                </excludes>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${maven-failsafe-plugin.version}</version>
+          <executions>
+            <execution>
+              <id>integration-test</id>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <summaryFile>${project.build.directory}/surefire-reports/failsafe-summary.xml</summaryFile>
+            <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven-jar-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <!-- https://docs.spring.io/spring-boot/docs/current/reference/html/howto-build.html#howto-git-info -->
+          <groupId>pl.project13.maven</groupId>
+          <artifactId>git-commit-id-plugin</artifactId>
+          <version>${git-commit-id-plugin.version}</version>
+          <configuration>
+
+            <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+            <prefix>git</prefix>
+            <verbose>false</verbose>
+            <generateGitPropertiesFile>true</generateGitPropertiesFile>
+            <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+            </generateGitPropertiesFilename>
+
+            <includeOnlyProperties>
+              <includeOnlyProperty>^git.build.version$</includeOnlyProperty>
+              <includeOnlyProperty>^git.build.time$</includeOnlyProperty>
+              <includeOnlyProperty>^git.branch$</includeOnlyProperty>
+              <includeOnlyProperty>^git.commit.id$</includeOnlyProperty>
+              <includeOnlyProperty>^git.commit.time$</includeOnlyProperty>
+              <includeOnlyProperty>^git.remote.origin.url$</includeOnlyProperty>
+            </includeOnlyProperties>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.0.0-M3</version>
+          <executions>
+            <execution>
+              <id>enforce-versions</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <rules>
+              <requireMavenVersion>
+                <message>Project requires at least Maven ${maven.version}</message>
+                <version>[${maven.version},)</version>
+              </requireMavenVersion>
+              <requireJavaVersion>
+                <!-- Until JHipster supports JDK 9 -->
+                <message>Project requires JDK ${java.version}</message>
+                <version>[${java.version},)</version>
+              </requireJavaVersion>
+              <banDuplicateClasses>
+                <ignoreClasses/>
+              </banDuplicateClasses>
+            </rules>
+            <fail>true</fail>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>extra-enforcer-rules</artifactId>
+              <version>1.2</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+
+        <plugin>
+          <groupId>org.projectlombok</groupId>
+          <artifactId>lombok-maven-plugin</artifactId>
+          <version>1.18.12.0</version>
+          <executions>
+            <execution>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>delombok</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

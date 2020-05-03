@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: rest-api
+  cloud:
+    discovery:
+      client:
+        health-indicator:
+          enabled: false
+    vault:
+      application-name: rest-api
+      authentication: CUBBYHOLE
+      config:
+        lifecycle:
+          enabled: true
+          lease-endpoints: legacy
+          min-renewal: 60m
+          expiry-threshold: 60m
+      enabled: true
+      fail-fast: true
+      generic:
+        enabled: false
+      kv:
+        enabled: false
+      token: ${VAULT_CUBBYHOLE_TOKEN}
+      uri: ${VAULT_ADDR}
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: default

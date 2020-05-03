@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="Default" status="warn">
+
+  <Properties>
+    <Property name="colorfulLogPattern">%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} %highlight{${LOG_LEVEL_PATTERN:-%5p}}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=green, DEBUG=green bold, TRACE=blue} %style{${sys:PID}}{magenta} [%15.15t] %style{%-40.40C{1.}}{BG_Yellow, FG_Black} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}</Property>
+  </Properties>
+
+  <Appenders>
+    <Console name="local" target="SYSTEM_OUT">
+      <PatternLayout pattern="${colorfulLogPattern}"/>
+    </Console>
+  </Appenders>
+
+  <Loggers>
+
+    <Root level="info">
+      <AppenderRef ref="local"/>
+    </Root>
+
+<!--    <Logger name="org.springframework.core.log" level="debug"/>-->
+<!--    <Logger name="org.apache.http" level="debug"/>-->
+<!--    <Logger name="org.apache.http.client" level="debug"/>-->
+<!--    <Logger name="org.apache.http.client.protocol" level="debug"/>-->
+<!--    <Logger name="org.apache.http.impl" level="debug"/>-->
+<!--    <Logger name="org.apache.http.impl.execchain" level="debug"/>-->
+<!--    <Logger name="org.apache.http.impl.conn" level="debug"/>-->
+
+  </Loggers>
+
+</Configuration>
