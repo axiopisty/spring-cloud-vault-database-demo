@@ -94,9 +94,11 @@ create_token() {
   local APP_NAME="${1}"
   local POLICY_NAME="${2}"
 
-  # vault token create -policy=dev-readonly -policy=logs
+  echo "Creating token for ${APP_NAME} with policy ${POLICY_NAME}"
 
-  vault token create -id="${APP_NAME}-prod-token" -policy="${POLICY_NAME}"
+#  vault token create -policy=dev-readonly -policy=logs
+  local TOKEN=$(vault token create -policy="${POLICY_NAME}")
+#  vault token create -id="${APP_NAME}-prod-token" -policy="${POLICY_NAME}"
 }
 
 create_wrapped_token() {
@@ -117,14 +119,14 @@ initialize_secrets_path() {
     while read line; do
       key=$(echo "${line}" | cut -f1 -d=)
       value=$(echo "${line}" | cut -f2 -d=)
-      echo "vault kv put ""secret/apps/${APP_NAME}/${key}"" value=""${value}"""
+#      echo "vault kv put ""secret/apps/${APP_NAME}/${key}"" value=""${value}"""
       vault kv put "secret/apps/${APP_NAME}/${key}" value="${value}"
     done < "${SECRETS_FILE}"
     echo ""
 
-		echo "Listing secrets stored in vault"
-		vault kv list secret/apps/${APP_NAME}
-		echo ""
+#		echo "Listing secrets stored in vault"
+#		vault kv list secret/apps/${APP_NAME}
+#		echo ""
   fi
 
 }
@@ -136,8 +138,6 @@ initialize_application() {
   local DATABASE_TYPE=$(eval echo "\${$APP_DATABASE}")
   local POLICY_NAME="${APP_NAME}-policy"
 
-
-  echo ""
   echo "Using APP_NAME of [${APP_NAME}]"
   echo "Using POLICY_NAME of [${POLICY_NAME}]"
 

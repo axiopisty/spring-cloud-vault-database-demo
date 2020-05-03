@@ -42,12 +42,12 @@ do
     initialize_application "${APP_NAME}"
 done
 
-echo "${VAULT_DEV_ROOT_TOKEN_ID}" > /token_volume/root_token.txt
-echo "ROOT_TOKEN: ${VAULT_DEV_ROOT_TOKEN_ID} written to /token_volume/root_token.txt"
+#echo "${VAULT_DEV_ROOT_TOKEN_ID}" > /token_volume/root_token.txt
+#echo "ROOT_TOKEN: ${VAULT_DEV_ROOT_TOKEN_ID} written to /token_volume/root_token.txt"
 
-echo "vault secrets list -detailed"
-vault secrets list -detailed
-echo ""
+#echo "vault secrets list -detailed"
+#vault secrets list -detailed
+#echo ""
 
 echo "Vault is initialized and ready to be used."
 

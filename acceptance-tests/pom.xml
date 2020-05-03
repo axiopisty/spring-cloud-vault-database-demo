@@ -67,6 +67,22 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.github.axiopisty.scvdd</groupId>
+      <artifactId>rest-api</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webflux</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>net.serenity-bdd</groupId>
       <artifactId>serenity-core</artifactId>
       <version>${serenity.version}</version>
@@ -228,7 +244,7 @@
                   <name>com.github.axiopisty.scvdd.docker.network</name>
                 </network>
                 <ports>
-                  <port>server.port:8080</port>
+                  <port>rest-api.port:8080</port>
                 </ports>
                 <dependsOn>
                   <container>shared-data-container</container>
@@ -276,6 +292,7 @@
         <version>${maven-failsafe-plugin.version}</version>
         <configuration>
           <systemPropertyVariables>
+            <rest-api.port>${rest-api.port}</rest-api.port>
           </systemPropertyVariables>
           <includes>
             <include>**/*IntegrationTest.java</include>
